@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponseNotAllowed
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
@@ -18,9 +17,6 @@ from .serializers import (
     UserRegisterSerializer,
     UserLoginSerializer, DialogueSerializer, NovelIdsSerializer
 )
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 @swagger_auto_schema(
@@ -118,7 +114,6 @@ def profile_view(request):
     user_profile = request.user.userprofile
     user_progress = UserProgress.objects.filter(user=user_profile)
 
-    # Получаем данные профиля и прогресс
     progress_data = [
         {
             'novel': progress.current_episode.season.novel.id,
@@ -128,7 +123,6 @@ def profile_view(request):
         for progress in user_progress
     ]
 
-    # Создаем данные для ответа
     data = {
         'profile': {
             'avatar': user_profile.avatar.url,
@@ -152,7 +146,7 @@ def novel_list(request):
     user_profile = get_object_or_404(UserProfile, user=request.user)
     progress_dict = {}
     for progress in UserProgress.objects.filter(user=user_profile):
-        if progress.current_episode:  # Проверка, чтобы избежать ошибки
+        if progress.current_episode:
             progress_dict[progress.current_episode.id] = progress.progress
 
     novels = Novel.objects.all()
@@ -173,7 +167,6 @@ def novel_progress(request, novel_id):
     novel = get_object_or_404(Novel, id=novel_id)
     user_profile = request.user.userprofile
 
-    # Получаем все сезоны и эпизоды
     seasons = novel.seasons.all()
     seasons_data = []
 
@@ -181,14 +174,12 @@ def novel_progress(request, novel_id):
         episodes = season.episodes.all()
         total_episodes = episodes.count()
 
-        # Считаем количество завершённых эпизодов
         completed_episodes = UserProgress.objects.filter(
             user=user_profile,
             current_episode__in=episodes,
             progress=100.0
         ).count()
 
-        # Находим следующий эпизод
         next_episode = episodes.filter(number=completed_episodes + 1).first()
         current_episode_id = next_episode.id if next_episode else None
 
@@ -214,7 +205,7 @@ def novel_progress(request, novel_id):
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def novel_detail(request, novel_id):
+def novel_detail(novel_id):
     novel = get_object_or_404(Novel, id=novel_id)
     first_episode = novel.seasons.first().episodes.first()
     data = {
@@ -233,7 +224,7 @@ def novel_detail(request, novel_id):
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def episode_list(request, novel_id):
+def episode_list(novel_id):
     novel = get_object_or_404(Novel, id=novel_id)
     episodes = Episode.objects.filter(season__novel=novel)
     data = {
@@ -271,22 +262,19 @@ def upload_avatar(request):
 @permission_classes([IsAuthenticated])
 def get_novels_by_ids(request):
     if request.method == 'POST':
-        # Получение данных
         ids = request.data.get('ids', [])
         print(f'IDs received: {ids}')
 
-        # Фильтрация новелл по списку ID
         novels = Novel.objects.filter(id__in=ids)
         print(f'Novels found: {novels}')
 
-        # Преобразование новелл в сериализованный вид
         serialized_novels = NovelSerializer(novels, many=True).data
         print(f'Serialized data: {serialized_novels}')
 
-        # Возвращаем данные в формате JSON
         return JsonResponse(serialized_novels, safe=False)
     else:
         return HttpResponseNotAllowed(['POST'])
+
 
 class NovelReadingView(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
@@ -295,10 +283,8 @@ class NovelReadingView(viewsets.ViewSet):
             novel = get_object_or_404(Novel, id=novel_id)
             user = request.user.userprofile
 
-            # Получение прогресса пользователя
             progress = UserProgress.objects.filter(user=user, novel=novel).first()
 
-            # Получение общего количества эпизодов
             total_episodes = Episode.objects.filter(season__novel=novel).count()
 
             if not progress:
@@ -312,13 +298,11 @@ class NovelReadingView(viewsets.ViewSet):
 
             current_episode_id = progress.current_episode.id if progress.current_episode else None
 
-            # Подсчёт завершённых эпизодов
             completed_episodes = Episode.objects.filter(
                 season__novel=novel,
                 id__lte=current_episode_id
             ).count()
 
-            # Проверяем, завершена ли новелла (если пользователь завершил последний диалог последнего эпизода)
             is_completed = completed_episodes >= total_episodes
             progress_percent = 100 if is_completed else (completed_episodes / total_episodes * 100)
             status_text = "Completed" if is_completed else "In Progress"
@@ -338,13 +322,10 @@ class NovelReadingView(viewsets.ViewSet):
         novel = get_object_or_404(Novel, id=novel_id)
         user = request.user
 
-        # Получаем профиль пользователя
         user_profile = get_object_or_404(UserProfile, user=user)
 
-        # Получаем или создаем прогресс пользователя по данной новелле
         progress, created = UserProgress.objects.get_or_create(user=user_profile, novel=novel)
 
-        # Если прогресс создан заново или не содержит текущий диалог, начинаем с первого диалога
         if created or not progress.current_dialogue:
             first_episode = novel.seasons.first().episodes.first()
             first_dialogue = first_episode.dialogues.first() if first_episode else None
@@ -357,7 +338,6 @@ class NovelReadingView(viewsets.ViewSet):
                 return Response({"detail": "No episodes or dialogues found for this novel."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        # Сериализуем текущий диалог и возвращаем его
         serializer = DialogueSerializer(progress.current_dialogue)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -370,7 +350,6 @@ class NovelReadingView(viewsets.ViewSet):
             episode_completed = False
 
             if 'save_progress' in request.data:
-                # Ищем следующий диалог в текущем эпизоде
                 next_dialogue = Dialogue.objects.filter(
                     episode=progress.current_episode,
                     id__gt=progress.current_dialogue.id
@@ -390,7 +369,6 @@ class NovelReadingView(viewsets.ViewSet):
                         progress.current_episode = next_episode
                         progress.current_dialogue = next_dialogue
                     else:
-                        # Если больше эпизодов нет, возвращаем флаг завершения эпизода
                         episode_completed = True
 
                 progress.save()
@@ -401,7 +379,6 @@ class NovelReadingView(viewsets.ViewSet):
                 }, status=status.HTTP_200_OK)
 
             else:
-                # Возвращаем текущий диалог без обновления прогресса
                 serializer = DialogueSerializer(progress.current_dialogue)
                 return Response({
                     "dialogue": serializer.data,
@@ -411,4 +388,3 @@ class NovelReadingView(viewsets.ViewSet):
         except Exception as e:
             print(f"Unexpected error: {e}")
             return Response({"detail": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-

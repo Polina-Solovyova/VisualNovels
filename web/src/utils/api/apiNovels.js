@@ -19,7 +19,6 @@ axiosInstance.interceptors.request.use(config => {
     return Promise.reject(error);
 });
 
-// Получение списка новелл
 export const getNovels = async () => {
     const token = cookies.get('access_token');
 
@@ -39,7 +38,6 @@ export const getNovels = async () => {
 };
 
 
-// Получение деталей о новелле
 export const getNovelDetails = async (novelId) => {
     try {
         const response = await axiosInstance.get(`${API_URL}/api/${novelId}/`);

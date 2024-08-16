@@ -1,5 +1,3 @@
-// src/providers/UserProvider.js
-
 import React, { createContext, useState } from 'react';
 
 export const UserContext = createContext();

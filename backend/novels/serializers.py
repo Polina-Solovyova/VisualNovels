@@ -1,4 +1,3 @@
-# serializers.py
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import UserProfile, Novel, Episode, UserProgress, Dialogue, Choice
@@ -52,6 +51,7 @@ class DialogueSerializer(serializers.ModelSerializer):
 
 class NovelIdsSerializer(serializers.ModelSerializer):
     ids = serializers.PrimaryKeyRelatedField(many=True, queryset=Novel.objects.all())
+
     class Meta:
         model = Novel
         fields = ['ids']

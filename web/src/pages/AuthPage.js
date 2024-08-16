@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import '../css/AuthPage.css';
+import API_URL from "@utils/api/axiosConfig";
 
 const cookies = new Cookies();
 
@@ -15,7 +16,7 @@ export const handleLogout = async () => {
     }
 
     try {
-        await axios.post('http://localhost:8000/api/logout/', {}, {
+        await axios.post(`${API_URL}/logout/`, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -36,24 +37,20 @@ const AuthPage = ({ setIsAuth, isRegistration }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Интерцептор для обновления токена перед выполнением запросов
         const axiosInterceptor = axios.interceptors.request.use(
             async (config) => {
                 const accessToken = cookies.get('access_token');
                 const refreshToken = cookies.get('refresh_token');
 
-                // Проверка наличия access_token и refresh_token
                 if (accessToken && refreshToken) {
                     config.headers['Authorization'] = `Bearer ${accessToken}`;
 
-                    // Проверяем, если access_token истек
                     const { exp } = parseJwt(accessToken);
                     const currentTime = Math.floor(Date.now() / 1000);
 
                     if (exp < currentTime) {
-                        // Если access_token истек, обновляем его с использованием refresh_token
                         try {
-                            const response = await axios.post('http://localhost:8000/api/refresh/', {
+                            const response = await axios.post(`${API_URL}/refresh/`, {
                                 refresh: refreshToken
                             });
 
@@ -88,7 +85,7 @@ const AuthPage = ({ setIsAuth, isRegistration }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const url = isRegistration ? 'http://localhost:8000/api/register/' : 'http://localhost:8000/api/login/';
+        const url = isRegistration ? `${API_URL}/register/` : `${API_URL}/login/`;
 
         try {
             const data = {

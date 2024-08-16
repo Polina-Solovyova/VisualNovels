@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import NovelListPage from '@pages/NovelListPage';
@@ -21,7 +20,7 @@ const App = () => {
   );
 };
 
-const AppContent = ({ isAuth, setIsAuth }) => {
+const AppContent = ({setIsAuth }) => {
   const navigate = useNavigate();
   const location = useLocation();
 

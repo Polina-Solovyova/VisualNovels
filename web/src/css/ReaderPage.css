@@ -8,8 +8,8 @@
     position: fixed;
     left: 0;
     top: 0;
-    background-size: cover; /* Устанавливаем размер фона так, чтобы он заполнял контейнер */
-    background-position: center; /* Центрируем фоновое изображение */
+    background-size: cover;
+    background-position: center;
 }
 
 .reader-header {

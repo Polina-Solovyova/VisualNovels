@@ -3,13 +3,12 @@ import { UserContext } from '@providers/UserProvider';
 import { API_USER } from '@utils/api/apiUser';
 import Profile from '@components/Profile';
 import { useToast } from '@chakra-ui/react';
-import NovelBox from "@components/NovelBox";
 import '../css/ProfilePage.css';
 
 
 const ProfilePage = () => {
   const { user, setUser } = useContext(UserContext);
-  const [readNovels, setReadNovels] = useState([]);
+  const [, setReadNovels] = useState([]);
   const toast = useToast();
 
   useEffect(() => {

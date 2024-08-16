@@ -16,7 +16,6 @@
     align-items: center;
 }
 
-/* Логотип */
 .header-logo img {
     width: 170px;
     height: auto;
@@ -29,7 +28,6 @@
     }
 }
 
-/* Стили для текста и ссылок */
 .header-text {
     display: flex;
     gap: 50px;
