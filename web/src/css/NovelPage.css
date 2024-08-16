@@ -1,0 +1,283 @@
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 1200px;
+  height: 700px;
+  position: relative;
+}
+
+.carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-item {
+  width: 300px;
+  border-radius: 40px;
+  position: relative;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #D1D4FF;
+  color: #4A4170;
+  border: none;
+  border-radius: 10%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 900;
+  font-size: 24px;
+  user-select: none;
+}
+
+.carousel-button.left {
+  left: 100px;
+}
+
+.carousel-button.right {
+  right: 100px;
+}
+
+.carousel-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.novel-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.carousel-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.filter {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.filter select {
+  font-family: "RandomGrotesque", cursive;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 30px;
+  background: rgb(153, 184, 251);
+  color: rgb(74, 65, 112);
+  height: 30px;
+  text-align: center;
+}
+
+.tiles-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 300px);
+    column-gap: 50px;
+    row-gap: 50px;
+  width: 100%;
+  max-width: 1200px;
+  justify-content: center;
+    justify-items: center;
+}
+
+.novel-box {
+  width: 300px;
+  height: 420px;
+  border-radius: 20px;
+  background-color: rgba(209, 212, 255, 0.4);
+  border: 1px solid #D1D4FF;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 40px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.novel-image {
+  width: 220px;
+  height: 220px;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.novel-title {
+  margin-top: 30px;
+  margin-bottom: 0;
+  text-align: left;
+  font-family: "MyFlora", cursive;
+  font-size: 30px;
+  color: aliceblue;
+  position: relative;
+  font-weight: 100;
+}
+
+
+.novel-description {
+    width: 220px;
+    margin-top: 10px;
+    font-weight: 100;
+    margin-bottom: 0;
+    font-family: "RandomGrotesque", cursive;
+    font-size: 14px;
+    color: aliceblue;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    max-height: calc(1.4em * 3);
+}
+
+
+.novel-tag {
+  position: absolute;
+  user-select: none;
+  top: 20px;
+  left: 180px;
+  padding: 5px;
+  border-radius: 10px;
+  font-size: 15px;
+  z-index: 10;
+  white-space: nowrap;
+  font-family: "RandomGrotesque", cursive;
+  width: 40px;
+  height: 30px;
+  background: #D1D4FF;
+  color: #4A4170;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+.novel-box.expanded {
+  z-index: 1000;
+  border-radius: 20px;
+  overflow: hidden;
+    padding: 20px;
+}
+
+.novel-box.expanded img{
+  transform: scale(1.6);
+  object-fit: cover;
+  filter: brightness(60%) blur(0.3px);
+    margin-top: 30px;
+    margin-left: 20px;
+}
+
+.novel-box.expanded h3{
+  margin-top: -60px;
+  text-shadow: 0 0 5px #000000;
+    font-size: 20px;
+}
+
+.novel-box.expanded p{
+  z-index: 5000;
+  width: 250px;
+  margin-top: 0;
+  overflow: visible;
+  white-space: wrap;
+  text-shadow: 0 0 5px black;
+    font-size: 14px;
+}
+
+
+
+.expanded-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+    top: 0;
+  padding: 20px;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.expanded-content h4{
+   font-size: 10px;
+  font-family: "RandomGrotesque", cursive;
+  margin-top: 10px;
+  margin-left: -100px;
+  text-shadow: 0 0 5px black;
+    font-weight: 100;
+  color: #ffffff;
+}
+
+.read-button {
+  background-color: #4a4170;
+  width: 280px;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 280px;
+    margin-left: -40px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  transition: transform 0.7s ease, filter 0.7s ease;
+    z-index: 900;
+}
+
+.completion-message {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.novel-tag.progress {
+  background-color: rgb(240, 178, 251);
+  color: #4a4170;
+}
+
+.novel-tag.new {
+  background-color: #99b8fb;
+  color: #4a4170;
+}
+

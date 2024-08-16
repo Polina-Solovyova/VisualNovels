@@ -1,0 +1,177 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'universal-cookie';
+import '../css/AuthPage.css';
+
+const cookies = new Cookies();
+
+export const handleLogout = async () => {
+    const token = cookies.get('access_token');
+
+    if (!token) {
+        console.error('No access token found');
+        return;
+    }
+
+    try {
+        await axios.post('http://localhost:8000/api/logout/', {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        cookies.remove('access_token');
+        cookies.remove('refresh_token');
+        console.log('Logout successful');
+    } catch (error) {
+        console.error('Logout failed', error);
+    }
+};
+
+const AuthPage = ({ setIsAuth, isRegistration }) => {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Интерцептор для обновления токена перед выполнением запросов
+        const axiosInterceptor = axios.interceptors.request.use(
+            async (config) => {
+                const accessToken = cookies.get('access_token');
+                const refreshToken = cookies.get('refresh_token');
+
+                // Проверка наличия access_token и refresh_token
+                if (accessToken && refreshToken) {
+                    config.headers['Authorization'] = `Bearer ${accessToken}`;
+
+                    // Проверяем, если access_token истек
+                    const { exp } = parseJwt(accessToken);
+                    const currentTime = Math.floor(Date.now() / 1000);
+
+                    if (exp < currentTime) {
+                        // Если access_token истек, обновляем его с использованием refresh_token
+                        try {
+                            const response = await axios.post('http://localhost:8000/api/refresh/', {
+                                refresh: refreshToken
+                            });
+
+                            const newAccessToken = response.data.access;
+                            cookies.set('access_token', newAccessToken, { path: '/' });
+                            config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                        } catch (error) {
+                            console.error('Token refresh failed', error);
+                            handleLogout();
+                        }
+                    }
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.request.eject(axiosInterceptor);
+        };
+    }, []);
+
+    const parseJwt = (token) => {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const url = isRegistration ? 'http://localhost:8000/api/register/' : 'http://localhost:8000/api/login/';
+
+        try {
+            const data = {
+                username: username,
+                password: password,
+            };
+
+            if (isRegistration) {
+                data.email = email;
+            }
+
+            const response = await axios.post(url, data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const { access_token, refresh_token } = response.data;
+            if (!access_token || !refresh_token) {
+                throw new Error('Tokens not received');
+            }
+
+            cookies.set('access_token', access_token, { path: '/' });
+            cookies.set('refresh_token', refresh_token, { path: '/' });
+
+            setIsAuth(true);
+            navigate('/');
+        } catch (error) {
+            console.error('Authentication failed', error.response || error);
+            const errorMsg = error.response?.data?.detail || 'Authentication failed. Please check your credentials.';
+            setError(errorMsg);
+        }
+    };
+
+    return (
+        <div className="auth-container">
+            <div className="auth-box">
+                <h2>{isRegistration ? 'Register' : 'Login'}</h2>
+                {error && <p className="error-message">{error}</p>}
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Username:</label>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="input-field"
+                        />
+                    </div>
+                    {isRegistration && (
+                        <div className="form-group">
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="input-field"
+                            />
+                        </div>
+                    )}
+                    <div className="form-group">
+                        <label>Password:</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="input-field"
+                        />
+                    </div>
+                    <button type="submit" className="auth-button">
+                        {isRegistration ? 'Register' : 'Login'}
+                    </button>
+                </form>
+                <div className="auth-link">
+                    {isRegistration ? (
+                        <p>Already have an account? <Link to="/login">Login</Link></p>
+                    ) : (
+                        <p>Don't have an account? <Link to="/register">Register</Link></p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AuthPage;

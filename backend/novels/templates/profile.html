@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Profile</h2>
+    <p>Welcome, {{ profile.user.username }}!</p>
+    {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" alt="Avatar" width="100" height="100">
+    {% else %}
+        <img src="{% static 'novels/default_avatar.png' %}" alt="Default Avatar" width="100" height="100">
+    {% endif %}
+    <p>Diamonds: {{ profile.diamonds }}</p>
+    <h3>Read Novels</h3>
+    <ul>
+        {% for progress in user_progress %}
+            <li>{{ progress.series.title }} (Progress: {{ progress.progress }}%)</li>
+        {% empty %}
+            <li>No progress data available.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

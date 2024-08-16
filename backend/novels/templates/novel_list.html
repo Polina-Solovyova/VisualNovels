@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Novels</h2>
+<div class="novel-container">
+    {% for novel in novels %}
+        <div class="novel-box" onclick="showPopup('{{ novel.title }}', '{{ novel.description }}', '{{ novel.cover_image.url }}', {{ novel.id }}, {{ progress_dict|default_if_none:0 }})">
+            <img src="{{ novel.cover_image.url }}" alt="Cover Image">
+            <div class="novel-info">
+                <h3>{{ novel.title }}</h3>
+                <p>{{ novel.description }}</p>
+                {% if novel.id in progress_dict %}
+                    {% with progress='progress_dict[novel.id]' %}
+                        <div class="progress-bar">
+                            <div class="progress-bar-inner" style="width: {{ progress|floatformat:2 }}%;"></div>
+                        </div>
+                    {% endwith %}
+                {% else %}
+                    <p><span class="new">New</span></p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Popup -->
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <button class="popup-close" onclick="closePopup()">Close</button>
+        <div class="popup-header">
+            <span class="popup-title" id="popup-title"></span>
+            <span class="popup-progress" id="popup-progress"></span>
+        </div>
+        <img id="popup-image" src="" alt="Cover Image">
+        <div id="popup-description" class="popup-description"></div>
+        <a id="popup-read-button" href="#" class="button">Read</a>
+    </div>
+</div>
+
+<script>
+function showPopup(title, description, imageUrl, novelId, progress) {
+    document.getElementById('popup-title').innerText = title;
+    document.getElementById('popup-description').innerText = description;
+    document.getElementById('popup-image').src = imageUrl;
+
+    // Assume dummy values for progress calculation
+    var totalEpisodes = 10; // You may need to set this dynamically based on the novel's data
+    var currentSeason = 1; // You may need to set this dynamically based on the novel's data
+    var episodeNumber = 1; // You may need to set this dynamically based on the user's current episode
+
+    var progressText = `Episode ${episodeNumber}/${totalEpisodes} (Season ${currentSeason})`;
+    document.getElementById('popup-progress').innerText = `${progress}%`;
+
+    var readButton = document.getElementById('popup-read-button');
+    if (progress >= 100) {
+        // If fully read, link to a summary or other appropriate page
+        readButton.href = '#'; // Adjust this URL as necessary
+    } else {
+        readButton.href = `/novel/${novelId}/episode/1/`; // Adjust this URL to the next episode if needed
+    }
+
+    document.getElementById('popup').style.display = 'flex';
+}
+
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+}
+</script>
+{% endblock %}

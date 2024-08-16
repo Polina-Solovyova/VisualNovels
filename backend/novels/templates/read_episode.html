@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ novel.title }} - {{ episode.title }}</title>
+    <link rel="stylesheet" href="{% static 'novels/styles.css' %}">
+</head>
+<body>
+    <div class="novel-container" style="background-image: url('{{ dialogue.background.image.url }}')">
+        <div class="novel-header">
+            <button onclick="location.href='{% url 'novel_list' %}'">Exit</button>
+            <button id="settings-button">Settings</button>
+            <div class="progress">
+                Progress: {{ progress_percentage }}%
+            </div>
+        </div>
+        <div id="settings-panel" style="display: none;">
+            <label for="volume-control">Volume</label>
+            <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5">
+            <button id="mute-button">Mute</button>
+        </div>
+        {% if dialogue.music %}
+            <audio id="background-music" autoplay loop>
+                <source src="{{ dialogue.music.file.url }}" type="audio/mpeg">
+            </audio>
+        {% endif %}
+        {% if dialogue.character %}
+            <div class="character {{ dialogue.position }}">
+                <img src="{{ dialogue.character.image.url }}" alt="{{ dialogue.character.name }}">
+            </div>
+        {% endif %}
+        <div class="dialogue-text {{ dialogue.position }}" onclick="nextDialogue()">
+            <p>{{ dialogue.text }}</p>
+        </div>
+        <div class="choices">
+            {% for choice in choices %}
+                <button onclick="location.href='{% url 'choose_option' novel.id episode.id choice.id %}'">{{ choice.text }}</button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('settings-button').addEventListener('click', function() {
+            var panel = document.getElementById('settings-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('volume-control').addEventListener('input', function() {
+            document.getElementById('background-music').volume = this.value;
+        });
+
+        document.getElementById('mute-button').addEventListener('click', function() {
+            var audio = document.getElementById('background-music');
+            audio.muted = !audio.muted;
+        });
+
+        function nextDialogue() {
+            location.href = '{% url 'read_episode' novel.id episode.id %}?next=true';
+        }
+    </script>
+</body>
+</html>

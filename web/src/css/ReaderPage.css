@@ -1,0 +1,145 @@
+.reader-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-size: cover; /* Устанавливаем размер фона так, чтобы он заполнял контейнер */
+    background-position: center; /* Центрируем фоновое изображение */
+}
+
+.reader-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    color: #fff;
+    width: 100%;
+}
+
+.exit-button, .settings-button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.progress-bar {
+    flex-grow: 1;
+    margin: 0 10px;
+    background-color: #444;
+    height: 5px;
+}
+
+.reader-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.character-image {
+    max-height: 500px;
+    position: absolute;
+    bottom: 0;
+}
+
+.character-image.left {
+    left: 10px;
+}
+
+.character-image.right {
+    right: 10px;
+}
+
+.dialogue-box {
+    position: relative;
+    max-width: 50%;
+    padding: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: #000;
+    font-size: 18px;
+    text-align: center;
+    font-family: "RandomGrotesque", cursive;
+}
+
+.dialogue-box.left {
+    background-image: url('../assets/dialog-left.svg');
+    text-align: left;
+    margin-right: 500px;
+    margin-top: 200px;
+    width: 300px;
+    height: auto;
+}
+
+.dialogue-box.left p {
+    font-size: 16px;
+    line-height: 1.2;
+    max-width: 230px;
+    margin-left: 45px;
+}
+
+
+.dialogue-box.right {
+    background-image: url('../assets/dialog-right.svg');
+    text-align: left;
+    margin-left: 500px;
+    margin-top: 200px;
+    width: 300px;
+    height: auto;
+}
+
+.dialogue-box.right p {
+    font-size: 16px;
+    line-height: 1.2;
+    max-width: 230px;
+    margin-left: 30px;
+}
+
+.dialogue-box.center {
+    background-image: url('../assets/dialog-center.svg');
+    text-align: left;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+}
+
+.dialogue-box.center p {
+    font-size: 17px;
+    line-height: 1.2;
+    max-width: 250px;
+    margin-top: 110px;
+    margin-left: 30px;
+}
+
+.choices-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    position: absolute;
+    bottom: 20px;
+}
+
+.choice-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.choice-button:hover {
+    background-color: #555;
+}

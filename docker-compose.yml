@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ../visual_novels/web
+      dockerfile: ../visual_novels/web/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - static:/web/build/
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: backend
+      dockerfile: backend/visual_novels/backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      -  static:/app/static/
+    environment:
+      - DATABASE_URL=sqlite:///db.sqlite3
+
+  gateway:
+    image: nginx
+    ports:
+      - 8888:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static:/usr/share/nginx/html/
+
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend

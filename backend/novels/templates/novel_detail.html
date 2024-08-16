@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<h2>{{ novel.title }}</h2>
+<p>{{ novel.description }}</p>
+<img src="{{ novel.cover_image.url }}" alt="Cover Image">
+<h3>Seasons</h3>
+<ul>
+    {% for season in novel.seasons.all %}
+        <li>
+            <h4>{{ season.title }}</h4>
+            <ul>
+                {% for episode in season.episodes.all %}
+                    <li>
+                        <a href="{% url 'read_series' episode.id %}">{{ episode.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
